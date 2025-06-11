@@ -2,7 +2,7 @@ import express from "express";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 import cryptoRandomString from "crypto-random-string";
-import { IAnswer, IGameSettings } from "./types";
+import { IAnswer, IGameSettings, TeamTypes } from "./types";
 
 const app = express();
 const httpServer = createServer(app);
@@ -58,6 +58,18 @@ io.on("connection", (socket: Socket) => {
     console.log("changeQuestion:", next);
     // socket.to(gameId).emit("changeQuestion", next); // TODO: я не знаю, но почему-то он не хочет пушить в комнату
     socket.broadcast.emit("changeQuestion", next); // Broadcast to all clients
+  });
+
+  socket.on("setFail", (gameId: string, team: TeamTypes) => {
+    console.log("setFail:", team);
+    // socket.to(gameId).emit("setFail", next); // TODO: я не знаю, но почему-то он не хочет пушить в комнату
+    socket.broadcast.emit("setFail", team); // Broadcast to all clients
+  });
+
+  socket.on("changeTeam", (gameId: string, team: TeamTypes) => {
+    console.log("changeTeam:", team);
+    // socket.to(gameId).emit("changeTeam", next); // TODO: я не знаю, но почему-то он не хочет пушить в комнату
+    socket.broadcast.emit("changeTeam", team); // Broadcast to all clients
   });
 
 
