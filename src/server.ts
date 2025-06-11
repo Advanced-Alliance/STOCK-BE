@@ -1,7 +1,7 @@
 import express from "express";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
-import cryptoRandomString from 'crypto-random-string';
+import cryptoRandomString from "crypto-random-string";
 import { IGameSettings } from "./types";
 
 const app = express();
@@ -19,30 +19,26 @@ io.on("connection", (socket: Socket) => {
   console.log("User connected:", socket.id);
 
   socket.on("createGame", (game, callback) => {
-    const gameId = cryptoRandomString({length: 4, type: 'distinguishable'});
-    if (games[gameId]) callback(false);
-    games[gameId] = game;
-	
-    socket.join(gameId);
+    const onlineId = cryptoRandomString({ length: 4, type: "distinguishable" });
+    if (games[onlineId]) callback(false);
+    games[onlineId] = { ...game, onlineId };
 
-    console.log("User created a game. Games (rooms):", games);
+    socket.join(onlineId);
 
-    console.log("Data of a game. Games (rooms):", game);
+    socket.emit("message", "You are successfully created a game");
 
-    socket.emit("message", 'You are successfully created a game');
-
-	callback(gameId);
+    callback(onlineId);
   });
 
   socket.on("joinGame", (id, callback) => {
-    const gameId = cryptoRandomString({length: 4, type: 'distinguishable'});
+    const onlineId = cryptoRandomString({ length: 4, type: "distinguishable" });
     if (!games[id]) callback(false);
-	
-    socket.join(gameId);
+
+    socket.join(onlineId);
 
     console.log("User joined a game", id);
-	
-	callback(games[id]);
+
+    callback(games[id]);
   });
 
   socket.on("message", (msg: string) => {

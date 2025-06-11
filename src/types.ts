@@ -1,12 +1,12 @@
 export enum OrderBy {
-  none = 'none',
-  forward = 'forward',
-  backward = 'backward',
+  none = "none",
+  forward = "forward",
+  backward = "backward",
 }
 
 export enum GameType {
-  teamPlay = 'teamplay',
-  PvP = 'pvp',
+  teamPlay = "teamplay",
+  PvP = "pvp",
 }
 
 export interface IAnswer {
@@ -51,6 +51,7 @@ export interface IGame {
 }
 
 export interface IGameSettings {
+  onlineId?: string;
   game: IGame;
   authorName?: string;
   authorDescription?: string;
@@ -70,4 +71,4 @@ export interface IActivePlayer {
   player?: number | null;
 }
 
-export type TeamTypes = 'teamLeft' | 'teamRight';
+export type TeamTypes = "teamLeft" | "teamRight";

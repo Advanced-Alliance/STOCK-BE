@@ -12,12 +12,81 @@
     <input type="text" id="messageInput" placeholder="Enter message" />
     <button onclick="sendMessage()">Send</button>
     <button onclick="createGame()">Create game</button>
-	<input type="text" id="gameId" placeholder="XXXX" />
+    <input type="text" id="gameId" placeholder="XXXX" />
     <button onclick="joinGame()">Join</button>
     <ul id="messages"></ul>
     <script>
       const socket = io("http://localhost:8080");
       const messagesList = document.getElementById("messages");
+      const gameSettings = {
+        createDate: 1749675794031,
+        lastEditQuestion: 0,
+        lastEditDate: 1749675795529,
+        game: {
+          gameName: "Новая игра",
+          showQuestionsText: true,
+          maxFails: 3,
+          gameType: "classic",
+          questions: [
+            {
+              stageName: "Простая игра",
+              questionText: "",
+              orderBy: "none",
+              enable: true,
+              answers: [
+                {
+                  id: 0,
+                  text: "Частый ответ",
+                  points: 60,
+                },
+                {
+                  id: 1,
+                  text: "Средний ответ",
+                  points: 30,
+                },
+                {
+                  id: 2,
+                  text: "Редкий ответ",
+                  points: 10,
+                },
+              ],
+            },
+            {
+              stageName: "Двойная игра",
+              questionText: "",
+              orderBy: "none",
+              enable: true,
+              answers: [
+                {
+                  id: 0,
+                  text: "Частый ответ",
+                  points: 60,
+                },
+                {
+                  id: 1,
+                  text: "Средний ответ",
+                  points: 30,
+                },
+                {
+                  id: 2,
+                  text: "Редкий ответ",
+                  points: 10,
+                },
+              ],
+            },
+          ],
+          teamLeft: {
+            fails: 0,
+            players: [],
+            points: 0,
+          },
+          teamRight: {
+            fails: 0,
+            players: [],
+            points: 0,
+          },
+        },
+      };
 
       socket.on("connect", () => {
         const message = `Connected to Socket.IO server, id ${socket.id}`;
@@ -47,7 +116,7 @@
 
       function createGame() {
         clientMessage("Попытка создать игору");
-        socket.emit("createGame", "Хуита", (result) => {
+        socket.emit("createGame", gameSettings, (result) => {
           if (result) {
             clientMessage(`ID: ${result}`);
             return;
