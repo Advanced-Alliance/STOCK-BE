@@ -2,7 +2,7 @@ import express from "express";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 import cryptoRandomString from "crypto-random-string";
-import { IGameSettings } from "./types";
+import { IAnswer, IGameSettings } from "./types";
 
 const app = express();
 const httpServer = createServer(app);
@@ -44,6 +44,12 @@ io.on("connection", (socket: Socket) => {
   socket.on("message", (msg: string) => {
     console.log("Message:", msg);
     socket.broadcast.emit("message", msg); // Broadcast to all clients
+  });
+
+  socket.on("openCard", ([gameId, card]: [gameId: string, card: IAnswer]) => {
+    console.log("openCard:", gameId, card);
+    // socket.to(gameId).emit("openCard", card); // TODO: я не знаю, но почему-то он не хочет пушить в комнату
+    socket.broadcast.emit("openCard", card); // Broadcast to all clients
   });
 
   socket.on("disconnect", () => {
