@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO Client</title>
+    <script
+      src="https://cdn.socket.io/3.1.3/socket.io.min.js"
+      integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <input type="text" id="messageInput" placeholder="Enter message" />
+    <button onclick="sendMessage()">Send</button>
+    <button onclick="createGame()">Create game</button>
+	<input type="text" id="gameId" placeholder="XXXX" />
+    <button onclick="joinGame()">Join</button>
+    <ul id="messages"></ul>
+    <script>
+      const socket = io("http://localhost:8080");
+      const messagesList = document.getElementById("messages");
+
+      socket.on("connect", () => {
+        const message = `Connected to Socket.IO server, id ${socket.id}`;
+        serverMessage(message);
+      });
+
+      socket.on("message", (data) => {
+        serverMessage(data);
+      });
+
+      socket.on("disconnect", () => {
+        const message = "Disconnected from Socket.IO server";
+        serverMessage(message);
+      });
+
+      socket.on("connect_error", (error) => {
+        console.error("WebSocket error:", error);
+      });
+
+      function sendMessage() {
+        const messageInput = document.getElementById("messageInput");
+        const message = messageInput.value;
+        clientMessage(message);
+        socket.emit("message", message);
+        messageInput.value = "";
+      }
+
+      function createGame() {
+        clientMessage("Попытка создать игору");
+        socket.emit("createGame", "Хуита", (result) => {
+          if (result) {
+            clientMessage(`ID: ${result}`);
+            return;
+          }
+
+          clientMessage("Абасрался");
+        });
+      }
+
+      function joinGame() {
+        const gameIdInput = document.getElementById("gameId");
+        const id = gameIdInput.value;
+        clientMessage(`Вхожу в ${id}`);
+
+        socket.emit("joinGame", id, (result) => {
+          if (result) {
+            clientMessage(`Вошел`);
+            return;
+          }
+
+          clientMessage("Абасрался");
+        });
+      }
+
+      clientMessage = (message) => {
+        const messageItem = document.createElement("li");
+        messageItem.textContent = `Client: ${message}`;
+        messagesList.appendChild(messageItem);
+      };
+
+      serverMessage = (message) => {
+        const messageItem = document.createElement("li");
+        messageItem.textContent = `Server: ${message}`;
+        messagesList.appendChild(messageItem);
+      };
+    </script>
+  </body>
+</html>
