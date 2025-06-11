@@ -46,11 +46,22 @@ io.on("connection", (socket: Socket) => {
     socket.broadcast.emit("message", msg); // Broadcast to all clients
   });
 
-  socket.on("openCard", ([gameId, card]: [gameId: string, card: IAnswer]) => {
+
+
+  socket.on("openCard", (gameId: string, card: IAnswer) => {
     console.log("openCard:", gameId, card);
     // socket.to(gameId).emit("openCard", card); // TODO: я не знаю, но почему-то он не хочет пушить в комнату
     socket.broadcast.emit("openCard", card); // Broadcast to all clients
   });
+
+  socket.on("changeQuestion", (gameId: string, next: boolean) => {
+    console.log("changeQuestion:", next);
+    // socket.to(gameId).emit("changeQuestion", next); // TODO: я не знаю, но почему-то он не хочет пушить в комнату
+    socket.broadcast.emit("changeQuestion", next); // Broadcast to all clients
+  });
+
+
+
 
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
